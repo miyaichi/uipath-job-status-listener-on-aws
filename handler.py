@@ -8,7 +8,7 @@ from hashlib import sha256
 
 languages = [os.environ["language"]]
 trans = gettext.translation(
-    'messages', localedir='locale', languages=languages, fallback=True)
+    "messages", localedir="locale", languages=languages, fallback=True)
 trans.install()
 
 

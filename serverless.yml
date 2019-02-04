@@ -6,16 +6,26 @@ provider:
   region: ap-northeast-1
   environment:
     language: ${file(config.json):language}
+    orchestrator_secret: ${file(config.json):orchestrator.secret}
 
 plugins:
   - serverless-python-requirements
 
 functions:
-  job-status:
-    handler: handler.handler
+  google_hangouts:
+    handler: handler.google_hangouts
     environment:
-      secret: ${file(config.json):orchestrator.secret}
+      incomming_webhook_url: ${file(config.json):notification.google_hangouts.incomming_webhook_url}
     events:
       - http:
-          path: job-status
+          path: job-status/google_hangouts
+          method: post
+
+  slack:
+    handler: handler.slack
+    environment:
+      incomming_webhook_url: ${file(config.json):notification.slack.incomming_webhook_url}
+    events:
+      - http:
+          path: job-status/slack
           method: post

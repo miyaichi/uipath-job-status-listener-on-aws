@@ -5,7 +5,6 @@ import json
 import logging
 import os
 import requests
-import uipath
 from hashlib import sha256
 
 languages = [os.environ["language"]]
@@ -14,7 +13,12 @@ trans = gettext.translation(
 trans.install()
 
 
-def monitoring(func):
+def verify_signature(secret, msg, signature):
+    mac = hmac.new(secret, msg=msg, digestmod=sha256)
+    return hmac.compare_digest(str(mac.digest()), str(signature))
+
+
+def handler_wrapper(func):
     def decorate(event, context):
         log = logging.getLogger()
         log.setLevel(logging.DEBUG)
@@ -22,77 +26,99 @@ def monitoring(func):
         if event["body"]:
             log.debug("Received body {}".format(
                 json.dumps(json.loads(event["body"]))))
-        response = func(event, context)
-        log.debug("Response {}".format(json.dumps(response)))
+
+        secret = os.environ["orchestrator_secret"]
+        if secret or "X-UIPATH-Signature" in event["headers"]:
+            signature = event["headers"]["X-UIPATH-Signature"].decode('base64')
+            msg = event["body"].encode('utf-8')
+            if not verify_signature(secret, msg, signature):
+                response = {
+                    "statusCode":
+                    403,
+                    "body":
+                    json.dumps({
+                        "error": _("Secret and Signature mismatch")
+                    })
+                }
+                return response
+
+        payload = json.loads(event["body"])
+
+        if payload["Type"] not in ["job.faulted", "job.completed", "job.stopped"]:
+            response = {
+                "statusCode": 200,
+                "body": json.dumps({
+                    "message": _("This webhook was ignored")
+                })
+            }
+            return response
+
+        message = func(payload)
+
+        response = {
+            "statusCode": 200,
+            "body": json.dumps({
+                "message": message
+            })
+        }
         return response
 
     return decorate
 
 
-def verify_signature(secret, msg, signature):
-    mac = hmac.new(secret, msg=msg, digestmod=sha256)
-    return hmac.compare_digest(str(mac.digest()), str(signature))
-
-
-@monitoring
-def handler(event, context):
-    if os.environ["secret"] or "X-UIPATH-Signature" in event["headers"]:
-        secret = os.environ["secret"]
-        signature = event["headers"]["X-UIPATH-Signature"].decode('base64')
-        msg = event["body"].encode('utf-8')
-        if not verify_signature(secret, msg, signature):
-            response = {
-                "statusCode": 403,
-                "body": json.dumps({
-                    "error": _("Secret and Signature mismatch")
-                })
-            }
-            return response
-
-    payload = json.loads(event["body"])
+@handler_wrapper
+def slack(payload):
+    webhook_url = os.environ["incomming_webhook_url"]
 
     type = payload["Type"]
-    if type not in ["job.faulted", "job.completed", "job.stopped"]:
-        response = {
-            "statusCode": 200,
-            "body": json.dumps({
-                "message": _("This webhook was ignored")
-            })
-        }
-        return response
-
-    event_id = payload["EventId"]
-    timestamp = payload["Timestamp"]
-    job = payload["Job"]
-
-    # slack post
-    webhook_url = "https://hooks.slack.com/services/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"
+    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
+    info = payload["Job"]["Info"].encode("utf-8")
+    machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
     color = {
-        "job.faulted": "#FF0000",
-        "job.completed": "#00FF00",
-        "job.stopped": "#FFFF00"
-    }
-    requests.post(
+        "job.faulted": "danger",
+        "job.completed": "good",
+        "job.stopped": "warning"
+    }.get(type, "")
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(
         webhook_url,
         data=json.dumps({
             "attachments": [{
                 "fallback":
-                type,
-                "pretext":
-                type,
+                "{} {}".format(process_key, " ".join(type.split("."))),
                 "color":
-                color.get(type, "F0F0F0"),
+                color,
                 "fields": [{
-                    "title": job["Release"]["ProcessKey"],
-                    "value": job["Info"]
-                }]
+                    "title":
+                    "{} {}".format(process_key, " ".join(type.split("."))),
+                    "value":
+                    info
+                }],
+                "footer":
+                "Machine Name: {}".format(machine_name)
             }]
-        }))
+        }),
+        headers=headers)
+    return response.text
 
-    response = {
-        "statusCode": 200,
-        "body": json.dumps({
-            "message": json.dumps(payload)
-        })
-    }
-    return response
+
+@handler_wrapper
+def google_hangouts(payload):
+    webhook_url = os.environ["incomming_webhook_url"]
+
+    type = payload["Type"]
+    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
+    info = payload["Job"]["Info"].encode("utf-8")
+    machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
+
+    headers = {"Content-Type": "application/json; charset=UTF-8"}
+    response = requests.post(
+        webhook_url,
+        data=json.dumps({
+            "text":
+            "*{}* {}.\n{}\n\nMachine Name: {}".format(
+                process_key, " ".join(type.split(".")), info, machine_name)
+        }),
+        headers=headers)
+    return response.text

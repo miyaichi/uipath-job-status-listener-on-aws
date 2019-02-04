@@ -6,6 +6,9 @@
     },
     
     "notification": {
+        "google_hangouts": {
+            "incomming_webhook_url": ""
+        },
         "slack": {
             "incomming_webhook_url": ""
         }

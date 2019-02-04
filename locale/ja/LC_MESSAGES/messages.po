@@ -17,6 +17,24 @@ msgstr ""
 "Generated-By: Lingua 4.13\n"
 
 
+msgid "{} can not started. message is {}"
+msgstr "{} を開始できません。メッセージは {} です"
+
+msgid "{} failed"
+msgstr "{} が失敗しました"
+
+msgid "{} started. Job ID is {}"
+msgstr "{} を開始しました。ジョブIDは {} です"
+
+msgid "Available process name are {}"
+msgstr "有効なプロセス名は {} です"
+
+msgid "Process not found"
+msgstr "プロセスが見つかりません"
+
+msgid "Relasse not found"
+msgstr "リリースが見つかりません"
+
 msgid "Secret and Signature mismatch"
 msgstr "シークレットとシグネチャーが一致しません"
 

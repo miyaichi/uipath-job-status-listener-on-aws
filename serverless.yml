@@ -7,6 +7,9 @@ provider:
   environment:
     language: ${file(config.json):language}
 
+plugins:
+  - serverless-python-requirements
+
 functions:
   job-status:
     handler: handler.handler

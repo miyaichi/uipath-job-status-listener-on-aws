@@ -4,6 +4,8 @@ import hmac
 import json
 import logging
 import os
+import requests
+import uipath
 from hashlib import sha256
 
 languages = [os.environ["language"]]
@@ -59,14 +61,38 @@ def handler(event, context):
         }
         return response
 
-    # something to do
+    event_id = payload["EventId"]
+    timestamp = payload["Timestamp"]
+    job = payload["Job"]
 
-    #   event_id = payload["EventId"]
-    #   timestamp = payload["Timestamp"]
-    #   job_id = payload["Jobs"]["Id"]
-    #   job_info = payload["Jobs"]["Info"]
-    #   release_id = payload["Release"]["Id"]
-    #   release_key = payload["Release"]["Key"]
+    # slack post
+    webhook_url = "https://hooks.slack.com/services/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"
+    color = {
+        "job.faulted": "#FF0000",
+        "job.completed": "#00FF00",
+        "job.stopped": "#FFFF00"
+    }
+    requests.post(
+        webhook_url,
+        data=json.dumps({
+            "attachments": [{
+                "fallback":
+                type,
+                "pretext":
+                type,
+                "color":
+                color.get(type, "F0F0F0"),
+                "fields": [{
+                    "title": job["Release"]["ProcessKey"],
+                    "value": job["Info"]
+                }]
+            }]
+        }))
 
-    response = {"statusCode": 200, "body": json.dumps({"message": json.dumps(payload)})}
+    response = {
+        "statusCode": 200,
+        "body": json.dumps({
+            "message": json.dumps(payload)
+        })
+    }
     return response

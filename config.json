@@ -2,6 +2,12 @@
     "language": "en",
 
     "orchestrator": {
-        "secret": ""
+        "secret": "secret"
+    },
+    
+    "notification": {
+        "slack": {
+            "incomming_webhook_url": ""
+        }
     }
 }

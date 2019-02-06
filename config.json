@@ -6,6 +6,10 @@
     },
     
     "notification": {
+        "chatwork": {
+            "api_token": "",
+            "room_id": ""
+        },
         "google_hangouts": {
             "incomming_webhook_url": ""
         },

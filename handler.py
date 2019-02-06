@@ -44,7 +44,9 @@ def handler_wrapper(func):
 
         payload = json.loads(event["body"])
 
-        if payload["Type"] not in ["job.faulted", "job.completed", "job.stopped"]:
+        if payload["Type"] not in [
+                "job.faulted", "job.completed", "job.stopped"
+        ]:
             response = {
                 "statusCode": 200,
                 "body": json.dumps({
@@ -64,6 +66,52 @@ def handler_wrapper(func):
         return response
 
     return decorate
+
+
+@handler_wrapper
+def chatwork(payload):
+    api_token = os.environ["api_token"]
+    room_id = os.environ["room_id"]
+
+    type = payload["Type"]
+    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
+    info = payload["Job"]["Info"].encode("utf-8")
+    machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
+
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-ChatWorkToken": api_token
+    }
+    response = requests.post(
+        "https://api.chatwork.com/v2/rooms/{}/messages".format(room_id),
+        headers=headers,
+        params={
+            "body":
+            "[info][title]{} {}.[/title]{}\n\nMachine Name: {}[/info]".format(
+                process_key, " ".join(type.split(".")), info, machine_name)
+        })
+    return response.text
+
+
+@handler_wrapper
+def google_hangouts(payload):
+    webhook_url = os.environ["incomming_webhook_url"]
+
+    type = payload["Type"]
+    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
+    info = payload["Job"]["Info"].encode("utf-8")
+    machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
+
+    headers = {"Content-Type": "application/json; charset=UTF-8"}
+    response = requests.post(
+        webhook_url,
+        data=json.dumps({
+            "text":
+            "*{}* {}.\n{}\n\nMachine Name: {}".format(
+                process_key, " ".join(type.split(".")), info, machine_name)
+        }),
+        headers=headers)
+    return response.text
 
 
 @handler_wrapper
@@ -98,27 +146,6 @@ def slack(payload):
                 "footer":
                 "Machine Name: {}".format(machine_name)
             }]
-        }),
-        headers=headers)
-    return response.text
-
-
-@handler_wrapper
-def google_hangouts(payload):
-    webhook_url = os.environ["incomming_webhook_url"]
-
-    type = payload["Type"]
-    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
-    info = payload["Job"]["Info"].encode("utf-8")
-    machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
-
-    headers = {"Content-Type": "application/json; charset=UTF-8"}
-    response = requests.post(
-        webhook_url,
-        data=json.dumps({
-            "text":
-            "*{}* {}.\n{}\n\nMachine Name: {}".format(
-                process_key, " ".join(type.split(".")), info, machine_name)
         }),
         headers=headers)
     return response.text

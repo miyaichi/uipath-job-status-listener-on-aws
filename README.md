@@ -2,7 +2,7 @@
 
 UiPath OrchestratorのWebhookを受信して、ジョブの状態を把握する仕組みを提供します。
 
-受信するイベントは以下の３つで、受信した内容をGoogle HangoutsやSlackに通知します。
+受信するイベントは以下の３つで、受信した内容をGoogle HangoutsやSlack、Chatworkに通知します。
 * job.faulted ジョブの実行が失敗した
 * job.completed ジョブの実行が正常に完了した
 * job.stopped ユーザーが手動でジョブを停止した
@@ -43,6 +43,10 @@ $ cat config.json
     },
     
     "notification": {
+        "chatwork": {
+            "api_token": "",
+            "room_id": ""
+        },
         "google_hangouts": {
             "incomming_webhook_url": ""
         },
@@ -75,6 +79,22 @@ $ cat config.json
 | Name         | Description                   |
 | ------------ | ----------------------------- |
 | secret       | Webhook登録時に設定したsecret |
+
+### Chatwork
+
+```
+"notification": {
+    "chatwork": {
+        "api_token": "",
+        "room_id": ""
+    }
+}
+```
+
+| Name      | Description                             |
+| --------- | --------------------------------------- |
+| api_token | Chatwork APIを呼び出すためのAPIトークン |
+| room_id   | メッセージを送信するチャットのID        |
 
 ### Google Hangouts
 

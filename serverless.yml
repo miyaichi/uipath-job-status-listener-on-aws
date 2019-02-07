@@ -13,7 +13,7 @@ plugins:
 
 functions:
   chatwork:
-    handler: handler.chatwork
+    handler: webhook_handler.chatwork
     environment:
       api_token: ${file(config.json):notification.chatwork.api_token}
       room_id: ${file(config.json):notification.chatwork.room_id}
@@ -23,7 +23,7 @@ functions:
           method: post
 
   google_hangouts:
-    handler: handler.google_hangouts
+    handler: webhook_handler.google_hangouts
     environment:
       incomming_webhook_url: ${file(config.json):notification.google_hangouts.incomming_webhook_url}
     events:
@@ -32,7 +32,7 @@ functions:
           method: post
 
   slack:
-    handler: handler.slack
+    handler: webhook_handler.slack
     environment:
       incomming_webhook_url: ${file(config.json):notification.slack.incomming_webhook_url}
     events:

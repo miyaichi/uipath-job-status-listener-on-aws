@@ -2,9 +2,10 @@
 
 UiPath Orchestratorのジョブの実行結果をモニタリングし、通知する仕組みを提供します。
 
+* Google Hangouts Chat
 ![Google Hangouts Chat](https://user-images.githubusercontent.com/46800750/52512953-118af700-2c4b-11e9-956a-ba96349544d8.jpg)
 
-
+* Slack
 ![slack](https://user-images.githubusercontent.com/46800750/52512959-1cde2280-2c4b-11e9-98dc-c53160f929ae.jpg)
 
 

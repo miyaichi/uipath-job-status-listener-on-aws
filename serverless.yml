@@ -6,36 +6,81 @@ provider:
   region: ap-northeast-1
   environment:
     language: ${file(config.json):language}
-    orchestrator_secret: ${file(config.json):orchestrator.secret}
 
 plugins:
   - serverless-python-requirements
 
 functions:
-  chatwork:
+  webhook_chatwork:
     handler: webhook_handler.chatwork
     environment:
-      api_token: ${file(config.json):notification.chatwork.api_token}
-      room_id: ${file(config.json):notification.chatwork.room_id}
+      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
+      api_token: ${file(config.json):webhook.chatwork.api_token}
+      room_id: ${file(config.json):webhook.chatwork.room_id}
     events:
       - http:
           path: job-status/chatwork
           method: post
 
-  google_hangouts:
+  webhook_google_hangouts:
     handler: webhook_handler.google_hangouts
     environment:
-      incomming_webhook_url: ${file(config.json):notification.google_hangouts.incomming_webhook_url}
+      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
+      incomming_webhook_url: ${file(config.json):webhook.google_hangouts.incomming_webhook_url}
     events:
       - http:
           path: job-status/google_hangouts
           method: post
 
-  slack:
+  webhook_slack:
     handler: webhook_handler.slack
     environment:
-      incomming_webhook_url: ${file(config.json):notification.slack.incomming_webhook_url}
+      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
+      incomming_webhook_url: ${file(config.json):webhook.slack.incomming_webhook_url}
     events:
       - http:
           path: job-status/slack
           method: post
+
+  scheduled_chatwork:
+    handler: scheduled_handler.chatwork
+    environment:
+      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.json):scheduled.chatwork.interval}
+      api_token: ${file(config.json):scheduled.chatwork.api_token}
+      room_id: ${file(config.json):scheduled.chatwork.room_id}
+    events:
+      - schedule: ${file(config.json):scheduled.chatwork.schedule}
+
+  scheduled_google_hangouts:
+    handler: scheduled_handler.google_hangouts
+    environment:
+      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.json):scheduled.google_hangouts.interval}
+      incomming_webhook_url: ${file(config.json):webhook.google_hangouts.incomming_webhook_url}
+    events:
+      - schedule: ${file(config.json):webhook.google_hangouts.schedule}
+
+  scheduled_slack:
+    handler: scheduled_handler.slack
+    environment:
+      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.json):scheduled.slack.interval}
+      incomming_webhook_url: ${file(config.json):scheduled.slack.incomming_webhook_url}
+    events:
+      - schedule: ${file(config.json):scheduled.slack.schedule}

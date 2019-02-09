@@ -66,11 +66,11 @@ $ cat config.json
 {
     "language": "en",
 
-    "orchestrator": {
-        "secret": "secret"
-    },
-    
-    "notification": {
+    "webhook": {
+        "orchestrator": {
+            "secret": ""
+        },
+
         "chatwork": {
             "api_token": "",
             "room_id": ""
@@ -81,10 +81,37 @@ $ cat config.json
         "slack": {
             "incomming_webhook_url": ""
         }
+    },
+
+    "scheduled": {
+        "orchestrator": {
+            "url": "",
+            "tenancy_name": "",
+            "username": "",
+            "password": "",
+            "api_key": "",
+            "ntlm_authentication": "False"
+        },
+
+        "chatwork": {
+            "api_token": "",
+            "room_id": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "google_hangouts": {
+            "incomming_webhook_url": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "slack": {
+            "incomming_webhook_url": "",
+            "interval": 0,
+            "schedule": ""
+        }
     }
 }
 ```
-
 
 ### language
 
@@ -162,10 +189,9 @@ OrchestratorのWebhookを受信するための設定です。
 
 スケジュール実行する場合の設定です。
 
-*schedule*パラメータはCloudWatchイベントのスケジュール式です。詳細は[AWS schedule syntax documentation](http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html)を参照。
+**schedule**パラメータはCloudWatchイベントのスケジュール式です。詳細は[AWS schedule syntax documentation](http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html)を参照。
 
-
-*interval*パラメータはOrchestratorのJobの情報を取得するための実行間隔を分(minutes)で指定します。スケジュール実行のたびに*interval*分前から現時刻までに終了したジョブをモニタリングの対象とします。
+**interval**パラメータはOrchestratorのJobの情報を取得するための実行間隔を分(minutes)で指定します。スケジュール実行のたびに*interval*分前から現時刻までに終了したジョブをモニタリングの対象とします。
 
 
 例：（１０分ごとに実行）

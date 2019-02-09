@@ -12,7 +12,7 @@ def start_jobs(process_name):
     o = orchestrator()
     if o.account_authenticate():
         filter = "Name eq '{}'".format(process_name)
-        odata = self.get_odata("/odata/Releases", filter)
+        odata = o.get_odata("/odata/Releases", filter)
         if odata:
             release_key = odata["value"][0]["Key"]
             job_id = o.start_jobs(release_key)

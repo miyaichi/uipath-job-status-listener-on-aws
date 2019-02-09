@@ -69,7 +69,7 @@ functions:
       interval: ${file(config.json):scheduled.google_hangouts.interval}
       incomming_webhook_url: ${file(config.json):webhook.google_hangouts.incomming_webhook_url}
     events:
-      - schedule: ${file(config.json):webhook.google_hangouts.schedule}
+      - schedule: ${file(config.json):scheduled.google_hangouts.schedule}
 
   scheduled_slack:
     handler: scheduled_handler.slack

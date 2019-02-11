@@ -42,6 +42,53 @@ def scheduled_handler_wrapper(func):
 
 
 @scheduled_handler_wrapper
+def backlog(joblist):
+    api_key = os.environ["api_key"]
+    space_key = os.environ["space_key"]
+    project_id = os.environ["project_id"]
+    issue_type_id = os.environ["issue_type_id"]
+
+    issues = 0
+    for job in joblist:
+        release_name = job["ReleaseName"]
+        state = job["State"]
+
+        if state not in ["Faulted", "Stopped"]:
+            continue
+
+        issues += issues
+
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        params = {
+            "apiKey":
+            api_key,
+            "projectId":
+            project_id,
+            "issueTypeId":
+            issue_type_id,
+            "priorityId":
+            3,
+            "summary":
+            "{} {}".format(release_name, state),
+            "description":
+            json.dumps(
+                job,
+                ensure_ascii=False,
+                encoding="utf-8",
+                sort_keys=True,
+                indent=4)
+        }
+        response = requests.post(
+            "https://{}.backlog.jp/api/v2/issues".format(space_key),
+            headers=headers,
+            params=params)
+        if response.status_code != 200:
+            return response.text
+
+    return _("{} messages sent").format(len(joblist))
+
+
+@scheduled_handler_wrapper
 def chatwork(joblist):
     api_token = os.environ["api_token"]
     room_id = os.environ["room_id"]
@@ -66,7 +113,7 @@ def chatwork(joblist):
         if response.status_code != 200:
             return response.text
 
-    return "{} messages sent.".format(len(joblist))
+    return _("{} messages sent").format(len(joblist))
 
 
 @scheduled_handler_wrapper
@@ -89,7 +136,7 @@ def google_hangouts(joblist):
         if response.status_code != 200:
             return response.text
 
-    return "{} messages sent.".format(len(joblist))
+    return _("{} messages sent").format(len(joblist))
 
 
 @scheduled_handler_wrapper
@@ -125,4 +172,4 @@ def slack(joblist):
         if response.status_code != 200:
             return response.text
 
-    return "{} messages sent.".format(len(joblist))
+    return _("{} messages sent").format(len(joblist))

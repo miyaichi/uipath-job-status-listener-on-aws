@@ -23,8 +23,11 @@ msgstr "{} を開始できません。メッセージは {} です"
 msgid "{} failed"
 msgstr "{} が失敗しました"
 
+msgid "{} messages sent"
+msgstr "{} メッセージを送信しました"
+
 msgid "{} not found"
-msgstr "{}が見つかりません"
+msgstr "{} が見つかりません"
 
 msgid "{} started. Job ID is {}"
 msgstr "{} を開始しました。ジョブIDは {} です"

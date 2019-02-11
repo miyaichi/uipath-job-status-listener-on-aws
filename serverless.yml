@@ -11,6 +11,19 @@ plugins:
   - serverless-python-requirements
 
 functions:
+  webhook_backlog:
+    handler: webhook_handler.backlog
+    environment:
+      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
+      api_key: ${file(config.json):webhook.backlog.api_key}
+      space_key: ${file(config.json):webhook.backlog.space_key}
+      project_id: ${file(config.json):webhook.backlog.project_id}      
+      issue_type_id: ${file(config.json):webhook.backlog.issue_type_id}
+    events:
+      - http:
+          path: job-status/backlog
+          method: post
+
   webhook_chatwork:
     handler: webhook_handler.chatwork
     environment:
@@ -41,6 +54,23 @@ functions:
       - http:
           path: job-status/slack
           method: post
+
+   scheduled_backlog:
+    handler: scheduled_handler.backlog
+    environment:
+      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.json):scheduled.chatwork.interval}
+      api_key: ${file(config.json):webhook.backlog.api_key}
+      space_key: ${file(config.json):webhook.backlog.space_key}
+      project_id: ${file(config.json):webhook.backlog.project_id}      
+      issue_type_id: ${file(config.json):webhook.backlog.issue_type_id}
+    events:
+      - schedule: ${file(config.json):scheduled.backlog.schedule}
 
   scheduled_chatwork:
     handler: scheduled_handler.chatwork

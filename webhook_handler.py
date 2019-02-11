@@ -69,6 +69,35 @@ def handler_wrapper(func):
 
 
 @handler_wrapper
+def backlog(payload):
+    api_key = os.environ["api_key"]
+    space_key = os.environ["space_key"]
+    project_id = os.environ["project_id"]
+    issue_type_id = os.environ["issue_type_id"]
+
+    if payload["Type"] not in ["job.faulted", "job.stopped"]:
+        return _("This webhook was ignored")
+
+    type = payload["Type"]
+    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
+
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    params = {
+        "apiKey": api_key,
+        "projectId": project_id,
+        "issueTypeId": issue_type_id,
+        "priorityId":  3,
+        "summary": "{} {}".format(process_key, " ".join(type.split("."))),
+        "description": json.dumps(payload, ensure_ascii=False, encoding="utf-8", sort_keys=True, indent=4)
+    }
+    response = requests.post(
+        "https://{}.backlog.jp/api/v2/issues".format(space_key),
+        headers=headers,
+        params=params)
+    return response.text
+
+
+@handler_wrapper
 def chatwork(payload):
     api_token = os.environ["api_token"]
     room_id = os.environ["room_id"]

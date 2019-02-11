@@ -6,6 +6,12 @@
             "secret": ""
         },
 
+        "backlog": {
+            "api_key": "",
+            "space_key": "",
+            "project_id": "",
+            "issue_type_id": ""
+        },
         "chatwork": {
             "api_token": "",
             "room_id": ""
@@ -28,6 +34,12 @@
             "ntlm_authentication": "False"
         },
 
+        "backlog": {
+            "api_key": "",
+            "space_key": "",
+            "project_id": "",
+            "issue_type_id": ""
+        },
         "chatwork": {
             "api_token": "",
             "room_id": "",

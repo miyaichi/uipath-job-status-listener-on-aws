@@ -55,7 +55,7 @@ functions:
           path: job-status/slack
           method: post
 
-   scheduled_backlog:
+  scheduled_backlog:
     handler: scheduled_handler.backlog
     environment:
       orchestrator_url: ${file(config.json):scheduled.orchestrator.url}

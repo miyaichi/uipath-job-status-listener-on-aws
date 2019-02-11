@@ -38,7 +38,10 @@
             "api_key": "",
             "space_key": "",
             "project_id": "",
-            "issue_type_id": ""
+            "issue_type_id": "",
+            "interval": 0,
+            "schedule": ""
+
         },
         "chatwork": {
             "api_token": "",

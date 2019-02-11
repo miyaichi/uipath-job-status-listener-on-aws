@@ -15,24 +15,44 @@ UiPath Orchestratorのジョブの実行結果をモニタリングし、通知�
 
 ## Webhook
 
+### Notification
 UiPath 2018.4から提供されたOrchestratorのWebhookを利用して、ジョブの実行結果をChatwork / Google Hangouts / Slackに通知します。
 
-![Webhook](https://user-images.githubusercontent.com/46800750/52512966-28c9e480-2c4b-11e9-950e-7f9f271f0a94.png)
+![Webhook](https://user-images.githubusercontent.com/129797/52544615-1ee3e500-2df5-11e9-936a-b37ce0c2e8df.png)
 
 通知するイベントは以下の３つです。
 * job.faulted ジョブの実行が失敗した
 * job.completed ジョブの実行が正常に完了した
 * job.stopped ユーザーが手動でジョブを停止した
 
+### Create ticket
+UiPath 2018.4から提供されたOrchestratorのWebhookを利用して、ジョブが正常終了しなかった場合にチケットを作成します。
+
+![Webhook](https://user-images.githubusercontent.com/129797/52544620-21463f00-2df5-11e9-8cc5-e927125031d3.png)
+
+チケットを作成するイベントは以下の２つです。
+* job.faulted ジョブの実行が失敗した
+* job.stopped ユーザーが手動でジョブを停止した
+
 ## Scheduled
 
+### Notification
 OrchestratorのWebhookが利用できない場合に、スケジュール実行されたAWS Lambda FunctionでOrchestrator APIを呼び出し、ジョブの実行結果をChatwork / Google Hangouts / Slackに通知します。
 
-![Scheduled](https://user-images.githubusercontent.com/46800750/52512983-3aab8780-2c4b-11e9-9bc6-a166007bfad8.png)
+![Scheduled](https://user-images.githubusercontent.com/129797/52544621-23100280-2df5-11e9-80e0-ba185de75024.png)
 
 通知する実行結果は以下の３つです。
 * Faulted ジョブの実行が失敗した
 * Successful ジョブの実行が正常に完了した
+* Stopped ユーザーが手動でジョブを停止した
+
+### Create ticket
+OrchestratorのWebhookが利用できない場合に、スケジュール実行されたAWS Lambda FunctionでOrchestrator APIを呼び出し、ジョブが正常終了しなかった場合にチケットを作成します。
+
+![Scheduled](https://user-images.githubusercontent.com/129797/52544624-24d9c600-2df5-11e9-8847-a545e7baa9a8.png)
+
+チケットを作成する実行結果は以下の２つです。
+* Faulted ジョブの実行が失敗した
 * Stopped ユーザーが手動でジョブを停止した
 
 ## Setting

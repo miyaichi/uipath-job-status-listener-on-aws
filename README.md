@@ -91,6 +91,12 @@ $ cat config.json
             "secret": ""
         },
 
+        "backlog": {
+            "api_key": "",
+            "space_key": "",
+            "project_id": "",
+            "issue_type_id": ""
+        },
         "chatwork": {
             "api_token": "",
             "room_id": ""
@@ -113,6 +119,15 @@ $ cat config.json
             "ntlm_authentication": "False"
         },
 
+        "backlog": {
+            "api_key": "",
+            "space_key": "",
+            "project_id": "",
+            "issue_type_id": "",
+            "interval": 0,
+            "schedule": ""
+
+        },
         "chatwork": {
             "api_token": "",
             "room_id": "",
@@ -160,6 +175,24 @@ OrchestratorのWebhookを受信するための設定です。
 | Name         | Description                   |
 | ------------ | ----------------------------- |
 | secret       | Webhook登録時に設定したsecret |
+
+#### Backlog
+
+```
+"backlog": {
+    "api_key": "",
+    "space_key": "",
+    "project_id": "",
+    "issue_type_id": ""
+}
+```
+
+| Name          | Description                    |
+| ------------- | ------------------------------ |
+| api_key       | API キー                       |
+| space_key     | スペース情報                   |
+| project_id    | 課題を登録するプロジェクトのID |
+| issue_type_id | 課題の種別のID                 |
 
 #### Chatwork
 
@@ -243,6 +276,28 @@ OrchestratorのWebhookを受信するための設定です。
 | password            | パスワード                                      |
 | api_key             | API Key                                         |
 | ntlm_authentication | Windows 認証を有効にしていればTrue (True/False) |
+
+#### Backlog
+
+```
+"backlog": {
+    "api_key": "",
+    "space_key": "",
+    "project_id": "",
+    "issue_type_id": "",
+    "interval": 0,
+    "schedule": ""
+}
+```
+
+| Name          | Description                             |
+| ------------- | --------------------------------------- |
+| api_key       | API キー                                |
+| space_key     | スペース情報                            |
+| project_id    | 課題を登録するプロジェクトのID          |
+| issue_type_id | 課題の種別のID                          |
+| interval      | 実行間隔　分（minutes）                 |
+| schedule      | CroudWatchのスケジュール式（cron/rate） |
 
 #### Chatwork
 

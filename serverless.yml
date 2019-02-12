@@ -12,7 +12,7 @@ plugins:
 
 functions:
   webhook_backlog:
-    handler: webhook_handler.backlog
+    handler: handler.backlog_webhook_handler
     environment:
       orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
       api_key: ${file(config.json):webhook.backlog.api_key}
@@ -25,7 +25,7 @@ functions:
           method: post
 
   webhook_chatwork:
-    handler: webhook_handler.chatwork
+    handler: handler.chatwork_webhook_handler
     environment:
       orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
       api_token: ${file(config.json):webhook.chatwork.api_token}
@@ -36,7 +36,7 @@ functions:
           method: post
 
   webhook_google_hangouts:
-    handler: webhook_handler.google_hangouts
+    handler: handler.google_hangouts_webhook_handler
     environment:
       orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
       incomming_webhook_url: ${file(config.json):webhook.google_hangouts.incomming_webhook_url}
@@ -46,7 +46,7 @@ functions:
           method: post
 
   webhook_slack:
-    handler: webhook_handler.slack
+    handler: handler.slack_webhook_handler
     environment:
       orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
       incomming_webhook_url: ${file(config.json):webhook.slack.incomming_webhook_url}
@@ -56,7 +56,7 @@ functions:
           method: post
 
   scheduled_backlog:
-    handler: scheduled_handler.backlog
+    handler: handler.backlog_scheduled_handler
     environment:
       orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
       orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
@@ -73,7 +73,7 @@ functions:
       - schedule: ${file(config.json):scheduled.backlog.schedule}
 
   scheduled_chatwork:
-    handler: scheduled_handler.chatwork
+    handler: handler.chatwork_scheduled_handler
     environment:
       orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
       orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
@@ -88,7 +88,7 @@ functions:
       - schedule: ${file(config.json):scheduled.chatwork.schedule}
 
   scheduled_google_hangouts:
-    handler: scheduled_handler.google_hangouts
+    handler: handler.google_hangouts_scheduled_handler
     environment:
       orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
       orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
@@ -102,7 +102,7 @@ functions:
       - schedule: ${file(config.json):scheduled.google_hangouts.schedule}
 
   scheduled_slack:
-    handler: scheduled_handler.slack
+    handler: handler.slack_scheduled_handler
     environment:
       orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
       orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}

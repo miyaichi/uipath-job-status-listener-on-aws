@@ -27,9 +27,10 @@ def scheduled_webhook_handler_wrapper(func):
             response = {"statusCode": 200, "body": "interval not found"}
             return response
 
-        filter = "StartTime ge {}Z".format(
-            (datetime.datetime.now().replace(second=0, microsecond=0) -
-             datetime.timedelta(minutes=minutes)).isoformat())
+        end = datetime.datetime.now().replace(second=0, microsecond=0)
+        start = end - datetime.timedelta(minutes=minutes)
+        filter = "StartTime ge {}Z and StartTime lt {}Z".format(
+            start.isoformat(), end.isoformat())
         log.debug("Job filter: {}".format(filter))
 
         joblist, message = uipath.jobs(filter)

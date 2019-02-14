@@ -35,7 +35,7 @@ def scheduled_webhook_handler_wrapper(func):
 
         joblist, message = uipath.jobs(filter)
         if joblist is not None:
-            log.debug("{} jobs found".format(len(joblist)))
+            log.debug("Job list {}".format(json.dumps(joblist)))
             message = func(joblist)
 
         response = {"statusCode": 200, "body": message}

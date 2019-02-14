@@ -4,13 +4,33 @@ import os
 import requests
 
 
-def post_message(attachment):
+def post_message(process_name, state, info, machine_name):
     webhook_url = os.environ["incomming_webhook_url"]
+
+    color = {
+        "Faulted": "danger",
+        "Successful": "good",
+        "Stopped": "warning"
+    }.get(state, "")
 
     headers = {"Content-Type": "application/json"}
     response = requests.post(
-        webhook_url, data=json.dumps({
-            "attachments": [attachment]
+        webhook_url,
+        data=json.dumps({
+            "attachments": [{
+                "fallback":
+                "{} {}".format(process_name, state.lower()),
+                "color":
+                color,
+                "fields": [{
+                    "title":
+                    "{} {}".format(process_name, state.lower()),
+                    "value":
+                    info
+                }],
+                "footer":
+                "Machine Name: {}".format(machine_name)
+            }]
         }))
     return response
 
@@ -20,22 +40,9 @@ def scheduled_handler(joblist):
         release_name = job["ReleaseName"]
         info = job["Info"]
         state = job["State"]
-        color = {
-            "Faulted": "danger",
-            "Successful": "good",
-            "Stopped": "warning"
-        }.get(state, "")
+        machine_name = job["HostMachineName"]
 
-        response = post_message({
-            "fallback":
-            "{} {}".format(release_name, state),
-            "color":
-            color,
-            "fields": [{
-                "title": "{} {}".format(release_name, state),
-                "value": info
-            }],
-        })
+        response = post_message(release_name, state, info, machine_name)
         if response.status_code != 200:
             return response.text
 
@@ -43,30 +50,12 @@ def scheduled_handler(joblist):
 
 
 def webhook_handler(payload):
-    type = payload["Type"]
     process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
     info = payload["Job"]["Info"].encode("utf-8")
+    state = payload["Job"]["State"].encode("utf-8")
     machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
-    color = {
-        "job.faulted": "danger",
-        "job.completed": "good",
-        "job.stopped": "warning"
-    }.get(type, "")
 
-    response = post_message({
-        "fallback":
-        "{} {}".format(process_key, " ".join(type.split("."))),
-        "color":
-        color,
-        "fields": [{
-            "title":
-            "{} {}".format(process_key, " ".join(type.split("."))),
-            "value":
-            info
-        }],
-        "footer":
-        "Machine Name: {}".format(machine_name)
-    })
+    response = post_message(process_key, state, info, machine_name)
     if response.status_code != 200:
         return response.text
 

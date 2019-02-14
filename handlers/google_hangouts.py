@@ -1,16 +1,36 @@
+import gettext
 import json
 import os
 import requests
 
 
-def post_message(text):
+def post_message(process_name, state, info, machine_name):
     webhook_url = os.environ["incomming_webhook_url"]
+
+    color = {
+        "Faulted": "#FF0000",
+        "Successful": "#008000",
+        "Stopped": "#FFA500"
+    }.get(state, "")
 
     headers = {"Content-Type": "application/json; charset=UTF-8"}
     response = requests.post(
-        webhook_url, data=json.dumps({
-            "text": text
-        }), headers=headers)
+        webhook_url,
+        data=json.dumps({
+            "cards": [{
+                "sections": [{
+                    "widgets": [{
+                        "textParagraph": {
+                            "text":
+                            "<b>{}</b> <font color=\"{}\">{}</font><br>{}<br><br>Machine Name: {}"
+                            .format(process_name, color, state.lower(), info,
+                                    machine_name)
+                        }
+                    }]
+                }]
+            }]
+        }),
+        headers=headers)
     return response
 
 
@@ -19,9 +39,9 @@ def scheduled_handler(joblist):
         release_name = job["ReleaseName"]
         info = job["Info"]
         state = job["State"]
+        machine_name = job["HostMachineName"]
 
-        response = post_message("*{}* {}.\n{}".format(release_name, state,
-                                                      info))
+        response = post_message(release_name, state, info, machine_name)
         if response.status_code != 200:
             return response.text
 
@@ -29,13 +49,12 @@ def scheduled_handler(joblist):
 
 
 def webhook_handler(payload):
-    type = payload["Type"]
     process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
     info = payload["Job"]["Info"].encode("utf-8")
+    state = payload["Job"]["State"].encode("utf-8")
     machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
 
-    response = post_message("*{}* {}.\n{}\n\nMachine Name: {}".format(
-        process_key, " ".join(type.split(".")), info, machine_name))
+    response = post_message(process_key, state, info, machine_name)
     if response.status_code != 200:
         return response.text
 

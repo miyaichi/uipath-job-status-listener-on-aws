@@ -1,3 +1,5 @@
+# coding:utf-8
+import gettext
 import json
 import os
 import requests
@@ -6,6 +8,9 @@ import requests
 def post_message(process_name, state, info, machine_name):
     api_token = os.environ["api_token"]
     room_id = os.environ["room_id"]
+
+    (process_name, state, info, machine_name) = map(
+        lambda s: s.encode("utf-8"), (process_name, state, info, machine_name))
 
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -24,12 +29,8 @@ def post_message(process_name, state, info, machine_name):
 
 def scheduled_handler(joblist):
     for job in joblist:
-        release_name = job["ReleaseName"]
-        info = job["Info"]
-        state = job["State"]
-        machine_name = job["HostMachineName"]
-
-        response = post_message(release_name, state, info, machine_name)
+        response = post_message(job["ReleaseName"], job["State"], job["Info"],
+                                job["HostMachineName"])
         if response.status_code != 200:
             return response.text
 
@@ -37,12 +38,9 @@ def scheduled_handler(joblist):
 
 
 def webhook_handler(payload):
-    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
-    info = payload["Job"]["Info"].encode("utf-8")
-    state = payload["Job"]["State"].encode("utf-8")
-    machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
-
-    response = post_message(process_key, state, info, machine_name)
+    job = payload["Job"]
+    response = post_message(job["Release"]["ProcessKey"], job["State"],
+                            job["Info"], job["Robot"]["MachineName"])
     if response.status_code != 200:
         return response.text
 

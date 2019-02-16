@@ -196,6 +196,7 @@ def slack_webhook_handler(payload):
     response = handlers.slack.webhook_handler(payload)
     return response
 
+
 @scheduled_handler_wrapper
 def wrike_scheduled_handler(joblist):
     import handlers.wrike

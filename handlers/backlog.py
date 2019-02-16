@@ -1,18 +1,23 @@
+# coding:utf-8
+import gettext
 import json
 import os
 import requests
 
 
-def create_ticket(process_name, state, info, machie_name, payload):
+def create_ticket(process_name, state, info, machine_name, payload):
     api_key = os.environ["api_key"]
     space_key = os.environ["space_key"]
     project_id = os.environ["project_id"]
     issue_type_id = os.environ["issue_type_id"]
     priority_id = os.environ["priority_id"]
 
+    (process_name, state, info, machine_name) = map(
+        lambda s: s.encode("utf-8"), (process_name, state, info, machine_name))
+
     summery = "{} {}".format(process_name, state.lower())
-    description = "Info: {}¥nMachine Name: {}¥nData:¥n{}".format(
-        info, machie_name,
+    description = "Info: {}&br;Machine Name: {}&br;Data:&br;{}".format(
+        info, machine_name,
         json.dumps(
             payload,
             ensure_ascii=False,
@@ -21,52 +26,40 @@ def create_ticket(process_name, state, info, machie_name, payload):
             indent=4))
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    params = {
-        "apiKey": api_key,
-        "projectId": project_id,
-        "issueTypeId": issue_type_id,
-        "priorityId": priority_id,
-        "summary": summery,
-        "description": description
-    }
     response = requests.post(
         "https://{}.backlog.jp/api/v2/issues".format(space_key),
         headers=headers,
-        params=params)
+        params={
+            "apiKey": api_key,
+            "projectId": project_id,
+            "issueTypeId": issue_type_id,
+            "priorityId": priority_id,
+            "summary": summery,
+            "description": description
+        })
     return response
 
 
 def scheduled_handler(joblist):
-    issues = 0
+    joblist = filter(lambda job: job["State"] in ["Faulted", "Stopped"],
+                     joblist)
     for job in joblist:
-        if job["State"] not in ["Faulted", "Stopped"]:
-            continue
-
-        issues += issues
-
-        release_name = job["ReleaseName"]
-        info = job["Info"]
-        state = job["State"]
-        machine_name = job["HostMachineName"]
-
-        response = create_ticket(release_name, state, info, machine_name, job)
+        response = create_ticket(job["ReleaseName"], job["State"], job["Info"],
+                                 job["HostMachineName"], job)
         if response.status_code != 200:
             return response.text
 
-    return _("{} messages sent").format(issues)
+    return _("{} issues posted").format(len(joblist))
 
 
 def webhook_handler(payload):
-    if payload["Job"]["State"] not in ["Faulted", "Stopped"]:
+    job = payload["Job"]
+    if job["State"] not in ["Faulted", "Stopped"]:
         return _("This webhook was ignored")
 
-    process_key = payload["Job"]["Release"]["ProcessKey"].encode("utf-8")
-    info = payload["Job"]["Info"].encode("utf-8")
-    state = payload["Job"]["State"].encode("utf-8")
-    machine_name = payload["Job"]["Robot"]["MachineName"].encode("utf-8")
-
-    response = create_ticket(process_key, info, state, machine_name, payload)
+    response = create_message(job["Release"]["ProcessKey"], job["State"],
+                              job["Info"], job["Robot"]["MachineName"], job)
     if response.status_code != 200:
         return response.text
 
-    return _("{} messages sent").format(1)
+    return _("{} issues posted").format(1)

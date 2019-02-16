@@ -23,6 +23,9 @@ msgstr "{} を開始できません。メッセージは {} です"
 msgid "{} failed"
 msgstr "{} が失敗しました"
 
+msgid "{} issues posted"
+msgstr "{} 課題を登録しました"
+
 msgid "{} messages sent"
 msgstr "{} メッセージを送信しました"
 

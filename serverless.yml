@@ -119,7 +119,7 @@ functions:
       orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
-      interval: ${file(config.${self:provider.stage}.json):scheduled.chatwork.interval}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.backlog.interval}
       api_key: ${file(config.${self:provider.stage}.json):webhook.backlog.api_key}
       space_key: ${file(config.${self:provider.stage}.json):webhook.backlog.space_key}
       project_id: ${file(config.${self:provider.stage}.json):webhook.backlog.project_id}      

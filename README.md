@@ -88,6 +88,11 @@ CloudWatchのログに、受信したWebhookの内容や、取得したジョブ
 
 ### Backlog
 
+BacklogのAPIキーを発行します。
+
+* Backlogでチケットを登録するユーザーの / "個人設定" / "API" を選択します。
+* 新しいAPIキーを発行します。このキーは以降のapi_keyに設定します。
+
 ### Chatwork
 
 ### Google Hangouts Chat

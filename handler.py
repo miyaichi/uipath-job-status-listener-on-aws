@@ -15,7 +15,7 @@ trans = gettext.translation(
 trans.install()
 
 
-def scheduled_webhook_handler_wrapper(func):
+def scheduled_handler_wrapper(func):
     def decorate(event, context):
         log = logging.getLogger()
         log.setLevel(logging.DEBUG)
@@ -99,7 +99,7 @@ def webhook_handler_wrapper(func):
     return decorate
 
 
-@scheduled_webhook_handler_wrapper
+@scheduled_handler_wrapper
 def backlog_scheduled_handler(joblist):
     import handlers.backlog
     response = handlers.backlog.scheduled_handler(joblist)
@@ -113,7 +113,7 @@ def backlog_webhook_handler(event, context):
     return response
 
 
-@scheduled_webhook_handler_wrapper
+@scheduled_handler_wrapper
 def chatwork_scheduled_handler(joblist):
     import handlers.chatwork
     response = handlers.chatwork.scheduled_handler(joblist)
@@ -127,7 +127,7 @@ def chatwork_webhook_handler(payload):
     return response
 
 
-@scheduled_webhook_handler_wrapper
+@scheduled_handler_wrapper
 def google_hangouts_scheduled_handler(joblist):
     import handlers.google_hangouts
     response = handlers.google_hangouts.scheduled_handler(joblist)
@@ -141,7 +141,49 @@ def google_hangouts_webhook_handler(payload):
     return response
 
 
-@scheduled_webhook_handler_wrapper
+@scheduled_handler_wrapper
+def jira_scheduled_handler(joblist):
+    import handlers.jira
+    response = handlers.jira.scheduled_handler(joblist)
+    return response
+
+
+@webhook_handler_wrapper
+def jira_webhook_handler(payload):
+    import handlers.jira
+    response = handlers.jira.webhook_handler(payload)
+    return response
+
+
+@scheduled_handler_wrapper
+def redmine_scheduled_handler(joblist):
+    import handlers.redmine
+    response = handlers.redmine.scheduled_handler(joblist)
+    return response
+
+
+@webhook_handler_wrapper
+def redmine_webhook_handler(payload):
+    import handlers.redmine
+    response = handlers.redmine.webhook_handler(payload)
+    return response
+
+
+@scheduled_handler_wrapper
+def servicenow_scheduled_handler(joblist):
+    import handlers.servicenow
+    response = handlers.servicenow.scheduled_handler(joblist)
+    return response
+
+
+@webhook_handler_wrapper
+def servicenow_webhook_handler(payload):
+    import handlers.servicenow
+    response = handlers.servicenow.webhook_handler(payload)
+    return response
+
+
+@scheduled_handler_wrapper
 def slack_scheduled_handler(joblist):
     import handlers.slack
     response = handlers.slack.scheduled_handler(joblist)
@@ -152,4 +194,17 @@ def slack_scheduled_handler(joblist):
 def slack_webhook_handler(payload):
     import handlers.slack
     response = handlers.slack.webhook_handler(payload)
+    return response
+
+@scheduled_handler_wrapper
+def wrike_scheduled_handler(joblist):
+    import handlers.wrike
+    response = handlers.wrike.scheduled_handler(joblist)
+    return response
+
+
+@webhook_handler_wrapper
+def wrike_webhook_handler(payload):
+    import handlers.wrike
+    response = handlers.wrike.webhook_handler(payload)
     return response

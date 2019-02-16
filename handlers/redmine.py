@@ -4,11 +4,10 @@ import requests
 
 
 def create_ticket(process_name, state, info, machie_name, payload):
+    url = os.environ["url"]
     api_key = os.environ["api_key"]
-    space_key = os.environ["space_key"]
     project_id = os.environ["project_id"]
-    issue_type_id = os.environ["issue_type_id"]
-    priority_id = os.environ["priority_id"]
+    status_id = os.environ["status_id"]
 
     summery = "{} {}".format(process_name, state.lower())
     description = "Info: {}¥nMachine Name: {}¥nData:¥n{}".format(
@@ -20,19 +19,21 @@ def create_ticket(process_name, state, info, machie_name, payload):
             sort_keys=True,
             indent=4))
 
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    params = {
-        "apiKey": api_key,
-        "projectId": project_id,
-        "issueTypeId": issue_type_id,
-        "priorityId": priority_id,
-        "summary": summery,
-        "description": description
+    headers = {
+        "Content-Type": "application/json",
+        "X-Redmine-API-Key": api_key
     }
     response = requests.post(
-        "https://{}.backlog.jp/api/v2/issues".format(space_key),
-        headers=headers,
-        params=params)
+        url,
+        json.dumps({
+            "issue": {
+                "project_id": project_id,
+                "subject": summery,
+                "status_id": status_id,
+                "description": description
+            }
+        }),
+        headers=headers)
     return response
 
 

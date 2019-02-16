@@ -1,0 +1,122 @@
+{
+    "language": "en",
+
+    "webhook": {
+        "orchestrator": {
+            "secret": ""
+        },
+
+        "backlog": {
+            "api_key": "",
+            "space_key": "",
+            "project_id": "",
+            "issue_type_id": "",
+            "priority_id": ""
+        },
+        "chatwork": {
+            "api_token": "",
+            "room_id": ""
+        },
+        "google_hangouts": {
+            "incomming_webhook_url": ""
+        },
+        "jira": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "project": "",
+            "issue_type": ""
+        },
+        "redmine": {
+            "url": "",
+            "api_key": "",
+            "project_id": "",
+            "status_id": ""
+        },
+        "servicenow": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "assignment_group": "",
+            "urgency": "",
+            "impact": ""
+        },
+        "slack": {
+            "incomming_webhook_url": ""
+        },
+        "wrike": {
+            "tokey_key": "",
+            "folder_id": ""
+        }
+    },
+
+    "scheduled": {
+        "orchestrator": {
+            "url": "",
+            "tenancy_name": "",
+            "username": "",
+            "password": "",
+            "api_key": "",
+            "ntlm_authentication": "False"
+        },
+
+        "backlog": {
+            "api_key": "",
+            "space_key": "",
+            "project_id": "",
+            "issue_type_id": "",
+            "priority_id": ""
+            "interval": 0,
+            "schedule": ""
+        },
+        "chatwork": {
+            "api_token": "",
+            "room_id": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "google_hangouts": {
+            "incomming_webhook_url": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "jira": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "project": "",
+            "issue_type": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "redmine": {
+            "url": "",
+            "api_key": "",
+            "project_id": "",
+            "status_id": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "servicenow": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "assignment_group": "",
+            "urgency": "",
+            "impact": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "slack": {
+            "incomming_webhook_url": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "wrike": {
+            "tokey_key": "",
+            "folder_id": "",
+            "interval": 0,
+            "schedule": ""
+        }
+    }
+}

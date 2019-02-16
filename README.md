@@ -26,7 +26,7 @@ UiPath 2018.4から提供されたOrchestratorのWebhookを利用して、ジョ
 * job.stopped ユーザーが手動でジョブを停止した
 
 ### Create ticket
-UiPath 2018.4から提供されたOrchestratorのWebhookを利用して、ジョブが正常終了しなかった場合にチケットを作成します。
+UiPath 2018.4から提供されたOrchestratorのWebhookを利用して、ジョブが正常終了しなかった場合 Backlog / JIRA / Redmine / ServiceNow / Wrike にチケットを作成します。
 
 ![Webhook](https://user-images.githubusercontent.com/129797/52544620-21463f00-2df5-11e9-8cc5-e927125031d3.png)
 
@@ -47,7 +47,7 @@ OrchestratorのWebhookが利用できない場合に、スケジュール実行�
 * Stopped ユーザーが手動でジョブを停止した
 
 ### Create ticket
-OrchestratorのWebhookが利用できない場合に、スケジュール実行されたAWS Lambda FunctionでOrchestrator APIを呼び出し、ジョブが正常終了しなかった場合にチケットを作成します。
+OrchestratorのWebhookが利用できない場合に、スケジュール実行されたAWS Lambda FunctionでOrchestrator APIを呼び出し、ジョブが正常終了しなかった場合 Backlog / JIRA / Redmine / ServiceNow / Wrike にチケットを作成します。
 
 ![Scheduled](https://user-images.githubusercontent.com/129797/52544624-24d9c600-2df5-11e9-8847-a545e7baa9a8.png)
 
@@ -55,34 +55,66 @@ OrchestratorのWebhookが利用できない場合に、スケジュール実行�
 * Faulted ジョブの実行が失敗した
 * Stopped ユーザーが手動でジョブを停止した
 
-## Setting
+## Deploy
 
 * install serverless framework
 ```console
 $ npm install -g serverless
 ```
 
-* cron this repository
+* cron this repository and install serverless-python-requirements
 ```console
 $ git clone <this repository>
 $ cd <this clone directory>
+$ npm install --save serverless-python-requirements
 ```
 
-* modify config.json
+* modify config.[stage].json, serverless.yaml
 ```console
-$ vim congig.json
+$ vim congig.[stage].json
+$ vim serverless.yaml
 ```
 
 * deploy it
 ```console
-$ serverless deploy [--stage production]
+$ serverless deploy --stage [dev|prd]
 ```
+
+## Debug/Test
+
+CloudWatchのログに、受信したWebhookの内容や、取得したジョブの情報を出力しています。正常に動作していないと思われる場合は、まず、このログを確認してください。
+
+## Setting
+
+### Backlog
+
+### Chatwork
+
+### Google Hangouts Chat
+Google Hangouts Chatでwebhookの設定を行います。
+
+* 通知を受けたいチャットルームのメニューから"Configure webhooks"を選択します。
+* "Name" / "Avator URL"に以下を設定します。
+  * Name: Orchestrator-Job-Status
+  * Avator URL: https://www.uipath.com/hubfs/Valentin/Brand%20Kit/logos/UiPath-icon.png
+* 作成されたWebhook URL ( https://chat.googleapis.com/.... ) を下記config.[stage].jsonの"incomming_webhook_url"に設定します。
+
+参考：[Using incoming webhooks](https://developers.google.com/hangouts/chat/how-tos/webhooks)
+
+### JIRA
+
+### Redmine
+
+### ServiceNow
+
+### Slack
+
+### Wrike
 
 ## Configuration
 
-設定はconfig.jsonに記載します。また、AWS Lambdaの環境変数設定で値を変更することができます。
+設定はconfig.[stage].jsonに記載します。また、AWS Lambdaの環境変数設定で値を変更することができます。
 ```
-$ cat config.json
 {
     "language": "en",
 
@@ -95,7 +127,8 @@ $ cat config.json
             "api_key": "",
             "space_key": "",
             "project_id": "",
-            "issue_type_id": ""
+            "issue_type_id": "",
+            "priority_id": ""
         },
         "chatwork": {
             "api_token": "",
@@ -104,8 +137,33 @@ $ cat config.json
         "google_hangouts": {
             "incomming_webhook_url": ""
         },
+        "jira": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "project": "",
+            "issue_type": ""
+        },
+        "redmine": {
+            "url": "",
+            "api_key": "",
+            "project_id": "",
+            "status_id": ""
+        },
+        "ServiceNow": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "assignment_group": "",
+            "urgency": "",
+            "impact": ""
+        },
         "slack": {
             "incomming_webhook_url": ""
+        },
+        "wrike": {
+            "access_token": "",
+            "folder_id": ""
         }
     },
 
@@ -124,9 +182,9 @@ $ cat config.json
             "space_key": "",
             "project_id": "",
             "issue_type_id": "",
+            "priority_id": ""
             "interval": 0,
             "schedule": ""
-
         },
         "chatwork": {
             "api_token": "",
@@ -139,8 +197,41 @@ $ cat config.json
             "interval": 0,
             "schedule": ""
         },
+        "jira": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "project": "",
+            "issue_type": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "redmine": {
+            "url": "",
+            "api_key": "",
+            "project_id": "",
+            "status_id": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "ServiceNow": {
+            "url": "",
+            "username": "",
+            "password": "",
+            "assignment_group": "",
+            "urgency": "",
+            "impact": "",
+            "interval": 0,
+            "schedule": ""
+        },
         "slack": {
             "incomming_webhook_url": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "wrike": {
+            "access_token": "",
+            "folder_id": "",
             "interval": 0,
             "schedule": ""
         }
@@ -183,7 +274,8 @@ OrchestratorのWebhookを受信するための設定です。
     "api_key": "",
     "space_key": "",
     "project_id": "",
-    "issue_type_id": ""
+    "issue_type_id": "",
+    "priority_id": ""
 }
 ```
 
@@ -193,6 +285,7 @@ OrchestratorのWebhookを受信するための設定です。
 | space_key     | スペース情報                   |
 | project_id    | 課題を登録するプロジェクトのID |
 | issue_type_id | 課題の種別のID                 |
+| priority_id   | 課題の優先度のID               |
 
 #### Chatwork
 
@@ -224,6 +317,72 @@ OrchestratorのWebhookを受信するための設定です。
 | --------------------- | -------------------------------------------------- |
 | incomming_webhook_url | Google Hangoutsにメッセージを送るためのWebhook URL |
 
+#### JIRA
+
+```
+"webhook": {
+    "jira": {
+        "url": "",
+        "username": "",
+        "password": "",
+        "project": "",
+        "issue_type": ""
+    }
+}
+```
+
+| Name       | Description                |
+| ---------- | -------------------------- |
+| url        | JIRAのURL                  |
+| username   | ユーザー名                 |
+| password   | パスワード                 |
+| project    | 課題を登録するプロジェクト |
+| issue_type | 課題タイプ                 |
+
+#### Redmine
+
+```
+"webhook": {
+    "redmine": {
+        "url": "",
+        "api_key": "",
+        "project_id": "",
+        "status_id": ""
+    }
+}
+```
+
+| Name       | Description                    |
+| ---------- | ------------------------------ |
+| url        | RedmineのURL                   |
+| api_key    | APIキー                        |
+| project_id | 課題を登録するプロジェクトのID |
+| status_id  | 登録する課題のステータス       |
+
+#### ServiceNow
+
+```
+"webhook": {
+    "ServiceNow": {
+        "url": "",
+        "username": "",
+        "password": "",
+        "assignment_group": "",
+        "urgency": "",
+        "impact": ""
+    }
+}
+```
+
+| Name             | Description                    |
+| ---------------- | ------------------------------ |
+| url              | ServiceNowのURL                |
+| username         | ユーザー名                     |
+| password         | パスワード                     |
+| assignment_group | インシデントの割り当てグループ |
+| urgency          | インシデントの影響度           |
+| impact           | インシデントの緊急度           |
+
 #### Slack
 
 ```
@@ -237,6 +396,23 @@ OrchestratorのWebhookを受信するための設定です。
 | Name                  | Description                              |
 | --------------------- | ---------------------------------------- |
 | incomming_webhook_url | Slackにメッセージを送るためのWebhook URL |
+
+#### Wrike
+
+```
+"webhook": {
+    "wrike": {
+        "access_token": "",
+        "folder_id": ""
+    }
+}
+```
+
+| Name         | Description                     |
+| ------------ | ------------------------------- |
+| access_token | アクセストークン                |
+| folder_id    | チケットを登録するフォルダのID　|
+
 
 ### Scheduled
 
@@ -337,6 +513,69 @@ OrchestratorのWebhookを受信するための設定です。
 | interval              | 実行間隔　分（minutes）                            |
 | schedule              | CroudWatchのスケジュール式（cron/rate）            |
 
+#### JIRA
+
+```
+"scheduled": {
+    "jira": {
+        "interval": 0,
+        "schedule": ""
+    }
+}
+```
+
+| Name       | Description                             |
+| ---------- | --------------------------------------- |
+| url        | JIRAのURL                               |
+| username   | ユーザー名                              |
+| password   | パスワード                              |
+| project    | 課題を登録するプロジェクト              |
+| issue_type | 課題タイプ                              |
+| interval   | 実行間隔　分（minutes）                 |
+| schedule   | CroudWatchのスケジュール式（cron/rate） |
+
+#### Redmine
+
+```
+"scheduled": {
+    "redmine": {
+        "interval": 0,
+        "schedule": ""
+    }
+}
+```
+
+| Name       | Description                             |
+| ---------- | --------------------------------------- |
+| url        | RedmineのURL                            |
+| api_key    | APIキー                                 |
+| project_id | 課題を登録するプロジェクトのID          |
+| status_id  | 登録する課題のステータス                |
+| interval   | 実行間隔　分（minutes）                 |
+| schedule   | CroudWatchのスケジュール式（cron/rate） |
+
+#### ServiceNow
+
+```
+"scheduled": {
+    "servicenow": {
+        "interval": 0,
+        "schedule": ""
+    }
+}
+```
+
+| Name             | Description                             |
+| ---------------- | --------------------------------------- |
+| url              | ServiceNowのURL                         |
+| username         | ユーザー名                              |
+| password         | パスワード                              |
+| assignment_group | インシデントの割り当てグループ          |
+| urgency          | インシデントの影響度                    |
+| impact           | インシデントの緊急度                    |
+| interval         | 実行間隔　分（minutes）                 |
+| schedule         | CroudWatchのスケジュール式（cron/rate） |
+
 #### Slack
 
 ```
@@ -354,3 +593,23 @@ OrchestratorのWebhookを受信するための設定です。
 | incomming_webhook_url | Slackにメッセージを送るためのWebhook URL |
 | interval              | 実行間隔　分（minutes）                  |
 | schedule              | CroudWatchのスケジュール式（cron/rate）  |
+
+#### Wrike
+
+```
+"webhook": {
+    "wrike": {
+        "access_token": "",
+        "folder_id": "",
+        "interval": 0,
+        "schedule": ""
+    }
+}
+```
+
+| Name         | Description                              |
+| ------------ | ---------------------------------------- |
+| access_token | アクセストークン                         |
+| folder_id    | チケットを登録するフォルダのID　         |
+| interval     | 実行間隔　分（minutes）                  |
+| schedule     | CroudWatchのスケジュール式（cron/rate）  |

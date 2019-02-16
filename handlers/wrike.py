@@ -4,11 +4,8 @@ import requests
 
 
 def create_ticket(process_name, state, info, machie_name, payload):
-    api_key = os.environ["api_key"]
-    space_key = os.environ["space_key"]
-    project_id = os.environ["project_id"]
-    issue_type_id = os.environ["issue_type_id"]
-    priority_id = os.environ["priority_id"]
+    access_token = os.environ["access_token"]
+    folder_id = os.environ["folder_id"]
 
     summery = "{} {}".format(process_name, state.lower())
     description = "Info: {}¥nMachine Name: {}¥nData:¥n{}".format(
@@ -20,19 +17,15 @@ def create_ticket(process_name, state, info, machie_name, payload):
             sort_keys=True,
             indent=4))
 
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    params = {
-        "apiKey": api_key,
-        "projectId": project_id,
-        "issueTypeId": issue_type_id,
-        "priorityId": priority_id,
-        "summary": summery,
-        "description": description
-    }
+    headers = {'authorization': "bearer {}".format(access_token)}
     response = requests.post(
-        "https://{}.backlog.jp/api/v2/issues".format(space_key),
-        headers=headers,
-        params=params)
+        "https://www.wrike.com/api/v3/folders/{}/tasks".format(folder_id),
+        json.dumps({
+            "title": summery,
+            "description": description,
+            "status": "Active"
+        }),
+        headers=headers)
     return response
 
 

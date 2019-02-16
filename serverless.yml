@@ -4,8 +4,9 @@ provider:
   name: aws
   runtime: python2.7
   region: ap-northeast-1
+  stage: ${opt:stage, 'dev'}
   environment:
-    language: ${file(config.json):language}
+    language: ${file(config.${self:provider.stage}.json):language}
 
 plugins:
   - serverless-python-requirements
@@ -14,103 +15,227 @@ functions:
   webhook_backlog:
     handler: handler.backlog_webhook_handler
     environment:
-      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
-      api_key: ${file(config.json):webhook.backlog.api_key}
-      space_key: ${file(config.json):webhook.backlog.space_key}
-      project_id: ${file(config.json):webhook.backlog.project_id}      
-      issue_type_id: ${file(config.json):webhook.backlog.issue_type_id}
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      api_key: ${file(config.${self:provider.stage}.json):webhook.backlog.api_key}
+      space_key: ${file(config.${self:provider.stage}.json):webhook.backlog.space_key}
+      project_id: ${file(config.${self:provider.stage}.json):webhook.backlog.project_id}      
+      issue_type_id: ${file(config.${self:provider.stage}.json):webhook.backlog.issue_type_id}
+      priority_id: ${file(config.${self:provider.stage}.json):webhook.backlog.priority_id}
     events:
       - http:
-          path: job-status/backlog
+          path: uipath-job-status-listener/backlog
           method: post
 
   webhook_chatwork:
     handler: handler.chatwork_webhook_handler
     environment:
-      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
-      api_token: ${file(config.json):webhook.chatwork.api_token}
-      room_id: ${file(config.json):webhook.chatwork.room_id}
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      api_token: ${file(config.${self:provider.stage}.json):webhook.chatwork.api_token}
+      room_id: ${file(config.${self:provider.stage}.json):webhook.chatwork.room_id}
     events:
       - http:
-          path: job-status/chatwork
+          path: uipath-job-status-listener/chatwork
           method: post
 
   webhook_google_hangouts:
     handler: handler.google_hangouts_webhook_handler
     environment:
-      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
-      incomming_webhook_url: ${file(config.json):webhook.google_hangouts.incomming_webhook_url}
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      incomming_webhook_url: ${file(config.${self:provider.stage}.json):webhook.google_hangouts.incomming_webhook_url}
     events:
       - http:
-          path: job-status/google_hangouts
+          path: uipath-job-status-listener/google_hangouts
+          method: post
+
+  webhook_jira:
+    handler: handler.jira_webhook_handler
+    environment:
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      url: ${file(config.${self:provider.stage}.json):webhook.jira.url}
+      username: ${file(config.${self:provider.stage}.json):webhook.jira.username}
+      password: ${file(config.${self:provider.stage}.json):webhook.jira.password}
+      project: ${file(config.${self:provider.stage}.json):webhook.jira.project}
+      issue_type: ${file(config.${self:provider.stage}.json):webhook.jira.issue_type}
+    events:
+      - http:
+          path: uipath-job-status-listener/jira
+          method: post
+
+  webhook_redmine:
+    handler: handler.redmine_webhook_handler
+    environment:
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      url: ${file(config.${self:provider.stage}.json):webhook.redmine.url}
+      api_key: ${file(config.${self:provider.stage}.json):webhook.redmine.api_key}
+      project_id: ${file(config.${self:provider.stage}.json):webhook.redmine.project_id}
+      status_id: ${file(config.${self:provider.stage}.json):webhook.redmine.status_id}
+    events:
+      - http:
+          path: uipath-job-status-listener/redmine
+          method: post
+
+  webhook_servicenow:
+    handler: handler.servicenow_webhook_handler
+    environment:
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      url: ${file(config.${self:provider.stage}.json):webhook.servicenow.url}
+      username: ${file(config.${self:provider.stage}.json):webhook.servicenow.username}
+      password: ${file(config.${self:provider.stage}.json):webhook.servicenow.password}
+      assignment_group: ${file(config.${self:provider.stage}.json):webhook.servicenow.assignment_group}
+      urgency: ${file(config.${self:provider.stage}.json):webhook.servicenow.urgency}
+      impact: ${file(config.${self:provider.stage}.json):webhook.servicenow.impact}
+    events:
+      - http:
+          path: uipath-job-status-listener/servicenow
           method: post
 
   webhook_slack:
     handler: handler.slack_webhook_handler
     environment:
-      orchestrator_secret: ${file(config.json):webhook.orchestrator.secret}
-      incomming_webhook_url: ${file(config.json):webhook.slack.incomming_webhook_url}
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      incomming_webhook_url: ${file(config.${self:provider.stage}.json):webhook.slack.incomming_webhook_url}
     events:
       - http:
-          path: job-status/slack
+          path: uipath-job-status-listener/slack
+          method: post
+
+  webhook_wrike:
+    handler: handler.wrike_webhook_handler
+    environment:
+      orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      tokey_key: ${file(config.${self:provider.stage}.json):webhook.wrike.tokey_key}
+      folder_id: ${file(config.${self:provider.stage}.json):webhook.wrike.folder_id}
+    events:
+      - http:
+          path: uipath-job-status-listener/wrike
           method: post
 
   scheduled_backlog:
     handler: handler.backlog_scheduled_handler
     environment:
-      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
-      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
-      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
-      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
-      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
-      interval: ${file(config.json):scheduled.chatwork.interval}
-      api_key: ${file(config.json):webhook.backlog.api_key}
-      space_key: ${file(config.json):webhook.backlog.space_key}
-      project_id: ${file(config.json):webhook.backlog.project_id}      
-      issue_type_id: ${file(config.json):webhook.backlog.issue_type_id}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.chatwork.interval}
+      api_key: ${file(config.${self:provider.stage}.json):webhook.backlog.api_key}
+      space_key: ${file(config.${self:provider.stage}.json):webhook.backlog.space_key}
+      project_id: ${file(config.${self:provider.stage}.json):webhook.backlog.project_id}      
+      issue_type_id: ${file(config.${self:provider.stage}.json):webhook.backlog.issue_type_id}
+      priority_id: ${file(config.${self:provider.stage}.json):webhook.backlog.priority_id}
     events:
-      - schedule: ${file(config.json):scheduled.backlog.schedule}
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.backlog.schedule}
 
   scheduled_chatwork:
     handler: handler.chatwork_scheduled_handler
     environment:
-      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
-      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
-      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
-      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
-      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
-      interval: ${file(config.json):scheduled.chatwork.interval}
-      api_token: ${file(config.json):scheduled.chatwork.api_token}
-      room_id: ${file(config.json):scheduled.chatwork.room_id}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.chatwork.interval}
+      api_token: ${file(config.${self:provider.stage}.json):scheduled.chatwork.api_token}
+      room_id: ${file(config.${self:provider.stage}.json):scheduled.chatwork.room_id}
     events:
-      - schedule: ${file(config.json):scheduled.chatwork.schedule}
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.chatwork.schedule}
 
   scheduled_google_hangouts:
     handler: handler.google_hangouts_scheduled_handler
     environment:
-      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
-      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
-      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
-      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
-      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
-      interval: ${file(config.json):scheduled.google_hangouts.interval}
-      incomming_webhook_url: ${file(config.json):webhook.google_hangouts.incomming_webhook_url}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.google_hangouts.interval}
+      incomming_webhook_url: ${file(config.${self:provider.stage}.json):webhook.google_hangouts.incomming_webhook_url}
     events:
-      - schedule: ${file(config.json):scheduled.google_hangouts.schedule}
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.google_hangouts.schedule}
+
+  scheduled_jira:
+    handler: handler.jira_scheduled_handler
+    environment:
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.jira.interval}
+      url: ${file(config.${self:provider.stage}.json):scheduled.jira.url}
+      username: ${file(config.${self:provider.stage}.json):scheduled.jira.username}
+      password: ${file(config.${self:provider.stage}.json):scheduled.jira.password}
+      project: ${file(config.${self:provider.stage}.json):scheduled.jira.project}
+      issue_type: ${file(config.${self:provider.stage}.json):scheduled.jira.issue_type}
+    events:
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.jira.schedule}
+
+  scheduled_redmine:
+    handler: handler.redmine_scheduled_handler
+    environment:
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.redmine.interval}
+      url: ${file(config.${self:provider.stage}.json):scheduled.redmine.url}
+      api_key: ${file(config.${self:provider.stage}.json):scheduled.redmine.api_key}
+      project_id: ${file(config.${self:provider.stage}.json):scheduled.redmine.project_id}
+      status_id: ${file(config.${self:provider.stage}.json):scheduled.redmine.status_id}
+    events:
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.redmine.schedule}
+
+  scheduled_servicenow:
+    handler: handler.servicenow_scheduled_handler
+    environment:
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.servicenow.interval}
+      url: ${file(config.${self:provider.stage}.json):scheduled.servicenow.url}
+      username: ${file(config.${self:provider.stage}.json):scheduled.servicenow.username}
+      password: ${file(config.${self:provider.stage}.json):scheduled.servicenow.password}
+      assignment_group: ${file(config.${self:provider.stage}.json):scheduled.servicenow.assignment_group}
+      urgency: ${file(config.${self:provider.stage}.json):scheduled.servicenow.urgency}
+      impact: ${file(config.${self:provider.stage}.json):scheduled.servicenow.impact}
+    events:
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.servicenow.schedule}
 
   scheduled_slack:
     handler: handler.slack_scheduled_handler
     environment:
-      orchestrator_url: ${file(config.json):scheduled.orchestrator.url}
-      orchestrator_tenancy_name: ${file(config.json):scheduled.orchestrator.tenancy_name}
-      orchestrator_username: ${file(config.json):scheduled.orchestrator.username}
-      orchestrator_password: ${file(config.json):scheduled.orchestrator.password}
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
-      orchestrator_ntlm_authentication: ${file(config.json):scheduled.orchestrator.ntlm_authentication}
-      interval: ${file(config.json):scheduled.slack.interval}
-      incomming_webhook_url: ${file(config.json):scheduled.slack.incomming_webhook_url}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.slack.interval}
+      incomming_webhook_url: ${file(config.${self:provider.stage}.json):scheduled.slack.incomming_webhook_url}
     events:
-      - schedule: ${file(config.json):scheduled.slack.schedule}
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.slack.schedule}
+
+  scheduled_wrike:
+    handler: handler.wrike_scheduled_handler
+    environment:
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.wrike.interval}
+      tokey_key: ${file(config.${self:provider.stage}.json):scheduled.wrike.tokey_key}
+      folder_id: ${file(config.${self:provider.stage}.json):scheduled.wrike.folder_id}
+    events:
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.wrike.schedule}

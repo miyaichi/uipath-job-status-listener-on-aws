@@ -4,11 +4,11 @@ import requests
 
 
 def create_ticket(process_name, state, info, machie_name, payload):
-    api_key = os.environ["api_key"]
-    space_key = os.environ["space_key"]
-    project_id = os.environ["project_id"]
-    issue_type_id = os.environ["issue_type_id"]
-    priority_id = os.environ["priority_id"]
+    url = os.environ["url"]
+    username = os.environ["username"]
+    password = os.environ["password"]
+    project = os.environ["project"]
+    issue_type = os.environ["issue_type"]
 
     summery = "{} {}".format(process_name, state.lower())
     description = "Info: {}¥nMachine Name: {}¥nData:¥n{}".format(
@@ -20,19 +20,24 @@ def create_ticket(process_name, state, info, machie_name, payload):
             sort_keys=True,
             indent=4))
 
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    params = {
-        "apiKey": api_key,
-        "projectId": project_id,
-        "issueTypeId": issue_type_id,
-        "priorityId": priority_id,
-        "summary": summery,
-        "description": description
-    }
+    headers = {'Content-type': 'application/json'}
+    auth = (username, password)
     response = requests.post(
-        "https://{}.backlog.jp/api/v2/issues".format(space_key),
-        headers=headers,
-        params=params)
+        url + "/rest/api/2/issue/",
+        json.dumps({
+            "project": {
+                "key": project
+            },
+            "fields": {
+                "summary": summery,
+                "description": description,
+                "issuetype": {
+                    "name": issue_type
+                }
+            }
+        }),
+        auth=auth,
+        headers=headers)
     return response
 
 

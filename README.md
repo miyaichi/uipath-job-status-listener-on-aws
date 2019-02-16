@@ -28,7 +28,7 @@ UiPath 2018.4から提供されたOrchestratorのWebhookを利用して、ジョ
 ### Create ticket
 UiPath 2018.4から提供されたOrchestratorのWebhookを利用して、ジョブが正常終了しなかった場合 Backlog / JIRA / Redmine / ServiceNow / Wrike にチケットを作成します。
 
-![Webhook](https://user-images.githubusercontent.com/129797/52544620-21463f00-2df5-11e9-8cc5-e927125031d3.png)
+![Webhook](https://user-images.githubusercontent.com/129797/52894949-e594e600-31f5-11e9-9289-ac1fb12b4d18.png)
 
 チケットを作成するイベントは以下の２つです。
 * job.faulted ジョブの実行が失敗した
@@ -49,7 +49,7 @@ OrchestratorのWebhookが利用できない場合に、スケジュール実行�
 ### Create ticket
 OrchestratorのWebhookが利用できない場合に、スケジュール実行されたAWS Lambda FunctionでOrchestrator APIを呼び出し、ジョブが正常終了しなかった場合 Backlog / JIRA / Redmine / ServiceNow / Wrike にチケットを作成します。
 
-![Scheduled](https://user-images.githubusercontent.com/129797/52544624-24d9c600-2df5-11e9-8847-a545e7baa9a8.png)
+![Scheduled](https://user-images.githubusercontent.com/129797/52894950-e88fd680-31f5-11e9-9d13-b6643f9d95a0.png)
 
 チケットを作成する実行結果は以下の２つです。
 * Faulted ジョブの実行が失敗した

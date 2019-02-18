@@ -20,6 +20,11 @@
         "google_hangouts": {
             "incomming_webhook_url": ""
         },
+        "google_spreadsheet": {
+            "credential_file": "",
+            "spreadsheet_id": "",
+            "sheet": ""
+        },
         "jira": {
             "url": "",
             "username": "",
@@ -79,6 +84,11 @@
             "incomming_webhook_url": "",
             "interval": 0,
             "schedule": ""
+        },
+        "google_spreadsheet": {
+            "credential_file": "",
+            "spreadsheet_id": "",
+            "sheet": ""
         },
         "jira": {
             "url": "",

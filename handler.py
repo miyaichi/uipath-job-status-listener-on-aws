@@ -142,6 +142,20 @@ def google_hangouts_webhook_handler(payload):
 
 
 @scheduled_handler_wrapper
+def google_spreadsheet_scheduled_handler(joblist):
+    import handlers.google_spreadsheet
+    response = handlers.google_spreadsheet.scheduled_handler(joblist)
+    return response
+
+
+@webhook_handler_wrapper
+def google_spreadsheet_webhook_handler(joblist):
+    import handlers.google_spreadsheet
+    response = handlers.google_spreadsheet.webhook_handler(joblist)
+    return response
+
+
+@scheduled_handler_wrapper
 def jira_scheduled_handler(joblist):
     import handlers.jira
     response = handlers.jira.scheduled_handler(joblist)

@@ -142,6 +142,11 @@ Google Hangouts Chatでwebhookの設定を行います。
         "google_hangouts": {
             "incomming_webhook_url": ""
         },
+        "google_spreadsheet": {
+            "credential_file": "",
+            "spreadsheet_id": "",
+            "sheet": ""
+        },
         "jira": {
             "url": "",
             "username": "",
@@ -199,6 +204,13 @@ Google Hangouts Chatでwebhookの設定を行います。
         },
         "google_hangouts": {
             "incomming_webhook_url": "",
+            "interval": 0,
+            "schedule": ""
+        },
+        "google_spreadsheet": {
+            "credential_file": "",
+            "spreadsheet_id": "",
+            "sheet": "",
             "interval": 0,
             "schedule": ""
         },
@@ -321,6 +333,24 @@ OrchestratorのWebhookを受信するための設定です。
 | Name                  | Description                                        |
 | --------------------- | -------------------------------------------------- |
 | incomming_webhook_url | Google Hangoutsにメッセージを送るためのWebhook URL |
+
+#### Google Spreadsheet
+
+```
+"webhook": {
+    "google_spreadsheet": {
+        "credential_file": ""
+        "spreadsheet_id": ""
+        "sheet": ""
+    }
+}
+```
+
+| Name                  | Description                                            |
+| --------------------- | ------------------------------------------------------ |
+| credential_file | Google Spreadsheet APIにアクセスするためのcredentialファイル |
+| spreadsheet_id  | Jobのステータスを記録するGoogle SpreadsheetのID              |
+| sheet           | Jobのステータスを記録するGoogle Spreadsheetのシート名        |
 
 #### JIRA
 
@@ -517,6 +547,27 @@ OrchestratorのWebhookを受信するための設定です。
 | incomming_webhook_url | Google Hangoutsにメッセージを送るためのWebhook URL |
 | interval              | 実行間隔　分（minutes）                            |
 | schedule              | CroudWatchのスケジュール式（cron/rate）            |
+
+
+#### Google Spreadsheet
+
+```
+"webhook": {
+    "google_spreadsheet": {
+        "credential_file": ""
+        "spreadsheet_id": ""
+        "sheet": ""
+    }
+}
+```
+
+| Name            | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| credential_file | Google Spreadsheet APIにアクセスするためのcredentialファイル |
+| spreadsheet_id  | Jobのステータスを記録するGoogle SpreadsheetのID              |
+| sheet           | Jobのステータスを記録するGoogle Spreadsheetのシート名        |
+| interval        | 実行間隔　分（minutes）                                      |
+| schedule        | CroudWatchのスケジュール式（cron/rate）                      |
 
 #### JIRA
 

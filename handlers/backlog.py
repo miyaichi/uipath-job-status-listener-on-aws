@@ -17,7 +17,7 @@ def create_ticket(process_name, state, info, machine_name, payload):
         lambda s: s.encode("utf-8"), (process_name, state, info, machine_name))
 
     summery = "{} {}".format(process_name, state.lower())
-    description = "Info: {}¥nMachine Name: {}¥nData:¥n{}".format(
+    description = "Info: {}\nMachine Name: {}\nData:\n{}".format(
         info, machine_name, handlers.dumps(payload))
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}

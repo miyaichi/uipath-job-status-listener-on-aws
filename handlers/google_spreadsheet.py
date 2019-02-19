@@ -33,8 +33,8 @@ def append_data(joblist):
             values = []
 
         for job in joblist:
-            job = handlers.flatten(job)
-            job = handlers.timeformat(job)
+            job = handlers.flatten_json(job)
+            job = handlers.time_format(job)
             values.append(
                 list(map(lambda c: job[c] if c in job else "", columns)))
 

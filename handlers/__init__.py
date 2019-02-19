@@ -6,13 +6,13 @@ import pytz
 
 
 def dumps(data):
-    data = flatten(data)
-    data = timeformat(data)
+    data = flatten_json(data)
+    data = time_format(data)
     return json.dumps(
         data, ensure_ascii=False, encoding="utf-8", sort_keys=True, indent=4)
 
 
-def flatten(nested_data):
+def flatten_json(nested_data):
     def _flatten(x, name=""):
         if type(x) is dict:
             for a in x:
@@ -30,7 +30,7 @@ def flatten(nested_data):
     return flat_data
 
 
-def timeformat(data):
+def time_format(data):
     tz = os.environ["timezone"]
     for key in data.keys():
         if key.endswith("Time"):

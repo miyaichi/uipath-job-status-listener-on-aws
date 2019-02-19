@@ -29,11 +29,11 @@ def scheduled_handler_wrapper(func):
 
         end = datetime.datetime.now().replace(second=0, microsecond=0)
         start = end - datetime.timedelta(minutes=minutes)
-        filter = "StartTime ge {}Z and StartTime lt {}Z".format(
+        filters = "StartTime ge {}Z and StartTime lt {}Z".format(
             start.isoformat(), end.isoformat())
-        log.debug("Job filter: {}".format(filter))
+        log.debug("Job filter: {}".format(filters))
 
-        joblist, message = uipath.jobs(filter)
+        joblist, message = uipath.get_odata("Jobs", filters)
         if joblist is not None:
             available_state = [
                 s.strip() for s in os.environ["available_state"].split(',')

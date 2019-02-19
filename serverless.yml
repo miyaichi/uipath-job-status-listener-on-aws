@@ -7,6 +7,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   environment:
     language: ${file(config.${self:provider.stage}.json):language}
+    timezone: ${file(config.${self:provider.stage}.json):timezone}
 
 plugins:
   - serverless-python-requirements
@@ -16,6 +17,7 @@ functions:
     handler: handler.backlog_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.backlog.available_state}
       api_key: ${file(config.${self:provider.stage}.json):webhook.backlog.api_key}
       space_key: ${file(config.${self:provider.stage}.json):webhook.backlog.space_key}
       project_id: ${file(config.${self:provider.stage}.json):webhook.backlog.project_id}      
@@ -30,6 +32,7 @@ functions:
     handler: handler.chatwork_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.chatwork.available_state}
       api_token: ${file(config.${self:provider.stage}.json):webhook.chatwork.api_token}
       room_id: ${file(config.${self:provider.stage}.json):webhook.chatwork.room_id}
     events:
@@ -41,16 +44,30 @@ functions:
     handler: handler.google_hangouts_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.google_hangouts.available_state}
       incomming_webhook_url: ${file(config.${self:provider.stage}.json):webhook.google_hangouts.incomming_webhook_url}
     events:
       - http:
           path: uipath-job-status-listener/google_hangouts
           method: post
 
+  webhook_google_spreadsheet:
+    handler: handler.google_spreadsheet_webhook_handler
+    environment:
+      available_state: ${file(config.${self:provider.stage}.json):webhook.google_spreadsheet.available_state}
+      credential_file: ${file(config.${self:provider.stage}.json):webhook.google_spreadsheet.credential_file}
+      spreadsheet_id: ${file(config.${self:provider.stage}.json):webhook.google_spreadsheet.spreadsheet_id}
+      sheet: ${file(config.${self:provider.stage}.json):webhook.google_spreadsheet.sheet}
+    events:
+      - http:
+          path: uipath-job-status-listener/google_spreadsheet
+          method: post
+
   webhook_jira:
     handler: handler.jira_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.jira.available_state}
       url: ${file(config.${self:provider.stage}.json):webhook.jira.url}
       username: ${file(config.${self:provider.stage}.json):webhook.jira.username}
       password: ${file(config.${self:provider.stage}.json):webhook.jira.password}
@@ -65,6 +82,7 @@ functions:
     handler: handler.redmine_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.redmine.available_state}
       url: ${file(config.${self:provider.stage}.json):webhook.redmine.url}
       api_key: ${file(config.${self:provider.stage}.json):webhook.redmine.api_key}
       project_id: ${file(config.${self:provider.stage}.json):webhook.redmine.project_id}
@@ -78,6 +96,7 @@ functions:
     handler: handler.servicenow_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.servicenow.available_state}
       url: ${file(config.${self:provider.stage}.json):webhook.servicenow.url}
       username: ${file(config.${self:provider.stage}.json):webhook.servicenow.username}
       password: ${file(config.${self:provider.stage}.json):webhook.servicenow.password}
@@ -93,6 +112,7 @@ functions:
     handler: handler.slack_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.slack.available_state}
       incomming_webhook_url: ${file(config.${self:provider.stage}.json):webhook.slack.incomming_webhook_url}
     events:
       - http:
@@ -103,22 +123,12 @@ functions:
     handler: handler.wrike_webhook_handler
     environment:
       orchestrator_secret: ${file(config.${self:provider.stage}.json):webhook.orchestrator.secret}
+      available_state: ${file(config.${self:provider.stage}.json):webhook.wrike.available_state}
       tokey_key: ${file(config.${self:provider.stage}.json):webhook.wrike.tokey_key}
       folder_id: ${file(config.${self:provider.stage}.json):webhook.wrike.folder_id}
     events:
       - http:
           path: uipath-job-status-listener/wrike
-          method: post
-
-  webhook_google_spreadsheet:
-    handler: handler.google_spreadsheet_webhook_handler
-    environment:
-      credential_file: ${file(config.${self:provider.stage}.json):webhook.google_spreadsheet.credential_file}
-      spreadsheet_id: ${file(config.${self:provider.stage}.json):webhook.google_spreadsheet.spreadsheet_id}
-      sheet: ${file(config.${self:provider.stage}.json):webhook.google_spreadsheet.sheet}
-    events:
-      - http:
-          path: uipath-job-status-listener/google_spreadsheet
           method: post
 
   scheduled_backlog:
@@ -131,11 +141,12 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.backlog.interval}
-      api_key: ${file(config.${self:provider.stage}.json):webhook.backlog.api_key}
-      space_key: ${file(config.${self:provider.stage}.json):webhook.backlog.space_key}
-      project_id: ${file(config.${self:provider.stage}.json):webhook.backlog.project_id}      
-      issue_type_id: ${file(config.${self:provider.stage}.json):webhook.backlog.issue_type_id}
-      priority_id: ${file(config.${self:provider.stage}.json):webhook.backlog.priority_id}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.backlog.available_state}
+      api_key: ${file(config.${self:provider.stage}.json):scheduled.backlog.api_key}
+      space_key: ${file(config.${self:provider.stage}.json):scheduled.backlog.space_key}
+      project_id: ${file(config.${self:provider.stage}.json):scheduled.backlog.project_id}      
+      issue_type_id: ${file(config.${self:provider.stage}.json):scheduled.backlog.issue_type_id}
+      priority_id: ${file(config.${self:provider.stage}.json):scheduled.backlog.priority_id}
     events:
       - schedule: ${file(config.${self:provider.stage}.json):scheduled.backlog.schedule}
 
@@ -149,6 +160,7 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.chatwork.interval}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.chatwork.available_state}
       api_token: ${file(config.${self:provider.stage}.json):scheduled.chatwork.api_token}
       room_id: ${file(config.${self:provider.stage}.json):scheduled.chatwork.room_id}
     events:
@@ -164,9 +176,27 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.google_hangouts.interval}
-      incomming_webhook_url: ${file(config.${self:provider.stage}.json):webhook.google_hangouts.incomming_webhook_url}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.google_hangouts.available_state}
+      incomming_webhook_url: ${file(config.${self:provider.stage}.json):scheduled.google_hangouts.incomming_webhook_url}
     events:
       - schedule: ${file(config.${self:provider.stage}.json):scheduled.google_hangouts.schedule}
+
+  scheduled_google_spreadsheet:
+    handler: handler.google_spreadsheet_scheduled_handler
+    environment:
+      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
+      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
+      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
+      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
+      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
+      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
+      interval: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.interval}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.available_state}
+      credential_file: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.credential_file}
+      spreadsheet_id: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.spreadsheet_id}
+      sheet: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.sheet}
+    events:
+      - schedule: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.schedule}
 
   scheduled_jira:
     handler: handler.jira_scheduled_handler
@@ -178,6 +208,7 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.jira.interval}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.jira.available_state}
       url: ${file(config.${self:provider.stage}.json):scheduled.jira.url}
       username: ${file(config.${self:provider.stage}.json):scheduled.jira.username}
       password: ${file(config.${self:provider.stage}.json):scheduled.jira.password}
@@ -196,6 +227,7 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.redmine.interval}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.redmine.available_state}
       url: ${file(config.${self:provider.stage}.json):scheduled.redmine.url}
       api_key: ${file(config.${self:provider.stage}.json):scheduled.redmine.api_key}
       project_id: ${file(config.${self:provider.stage}.json):scheduled.redmine.project_id}
@@ -213,6 +245,7 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.servicenow.interval}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.servicenow.available_state}
       url: ${file(config.${self:provider.stage}.json):scheduled.servicenow.url}
       username: ${file(config.${self:provider.stage}.json):scheduled.servicenow.username}
       password: ${file(config.${self:provider.stage}.json):scheduled.servicenow.password}
@@ -232,6 +265,7 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.slack.interval}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.slack.available_state}
       incomming_webhook_url: ${file(config.${self:provider.stage}.json):scheduled.slack.incomming_webhook_url}
     events:
       - schedule: ${file(config.${self:provider.stage}.json):scheduled.slack.schedule}
@@ -246,23 +280,8 @@ functions:
       orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
       orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
       interval: ${file(config.${self:provider.stage}.json):scheduled.wrike.interval}
+      available_state: ${file(config.${self:provider.stage}.json):scheduled.wrike.available_state}
       tokey_key: ${file(config.${self:provider.stage}.json):scheduled.wrike.tokey_key}
       folder_id: ${file(config.${self:provider.stage}.json):scheduled.wrike.folder_id}
     events:
       - schedule: ${file(config.${self:provider.stage}.json):scheduled.wrike.schedule}
-
-  scheduled_google_spreadsheet:
-    handler: handler.google_spreadsheet_scheduled_handler
-    environment:
-      orchestrator_url: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.url}
-      orchestrator_tenancy_name: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.tenancy_name}
-      orchestrator_username: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.username}
-      orchestrator_password: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.password}
-      orchestrator_api_key: ${file(config.$son):scheduled.orchestrator.api_key}
-      orchestrator_ntlm_authentication: ${file(config.${self:provider.stage}.json):scheduled.orchestrator.ntlm_authentication}
-      interval: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.interval}
-      credential_file: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.credential_file}
-      spreadsheet_id: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.spreadsheet_id}
-      sheet: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.sheet}
-    events:
-      - schedule: ${file(config.${self:provider.stage}.json):scheduled.google_spreadsheet.schedule}

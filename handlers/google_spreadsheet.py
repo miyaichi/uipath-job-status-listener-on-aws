@@ -1,5 +1,6 @@
 # coding:utf-8
 import gettext
+import handlers
 import json
 import os
 import requests
@@ -21,27 +22,25 @@ def append_data(joblist):
                 scopes=["https://www.googleapis.com/auth/spreadsheets"]),
             cache_discovery=False)
 
-        range = "{}!{}:{}".format(sheet, "A",
-                                  chr(ord("A") + len(joblist[0]) - 1))
+        columns = sorted(joblist[0].keys())
+        values = [columns]
 
         data = service.spreadsheets().values().get(
-            spreadsheetId=spreadsheet_id, range=range).execute()
-        if "values" not in data:
-            columns = sorted(joblist[0].keys())
-            values = [columns]
-        else:
+            spreadsheetId=spreadsheet_id,
+            range="{}!A1:1".format(sheet)).execute()
+        if "values" in data:
             columns = data["values"][0]
             values = []
 
         for job in joblist:
-            value = []
-            for column in columns:
-                value.append(job[column])
-            values.append(value)
+            job = handlers.flatten(job)
+            job = handlers.timeformat(job)
+            values.append(
+                list(map(lambda c: job[c] if c in job else "", columns)))
 
         service.spreadsheets().values().append(
             spreadsheetId=spreadsheet_id,
-            range=range,
+            range="{}!A:A".format(sheet),
             body={
                 "majorDimension": "ROWS",
                 "values": values
@@ -55,16 +54,11 @@ def append_data(joblist):
 
 
 def scheduled_handler(joblist):
-    joblist = filter(lambda job: job["State"] in ["Faulted", "Stopped"],
-                     joblist)
     response = append_data(joblist)
     return response
 
 
 def webhook_handler(payload):
     job = payload["Job"]
-    if job["State"] not in ["Faulted", "Stopped"]:
-        return _("This webhook was ignored")
-
     response = append_data([job])
     return response

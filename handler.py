@@ -35,8 +35,14 @@ def scheduled_handler_wrapper(func):
 
         joblist, message = uipath.jobs(filter)
         if joblist is not None:
-            log.debug("Job list {}".format(json.dumps(joblist)))
-            message = func(joblist)
+            available_state = [
+                s.strip() for s in os.environ["available_state"].split(',')
+            ]
+            joblist = filter(lambda job: job["State"] in available_state,
+                             joblist)
+            if len(joblist):
+                log.debug("Job list {}".format(json.dumps(joblist)))
+                message = func(joblist)
 
         response = {"statusCode": 200, "body": message}
         return response
@@ -74,24 +80,26 @@ def webhook_handler_wrapper(func):
                 return response
 
         payload = json.loads(event["body"])
+        if "Job" in payload:
+            available_state = [
+                s.strip() for s in os.environ["available_state"].split(',')
+            ]
+            if payload["Job"]["State"] in available_state:
 
-        if payload["Type"] not in [
-                "job.faulted", "job.completed", "job.stopped"
-        ]:
-            response = {
-                "statusCode": 200,
-                "body": json.dumps({
-                    "message": _("This webhook was ignored")
-                })
-            }
-            return response
+                message = func(payload)
 
-        message = func(payload)
+                response = {
+                    "statusCode": 200,
+                    "body": json.dumps({
+                        "message": message
+                    })
+                }
+                return response
 
         response = {
             "statusCode": 200,
             "body": json.dumps({
-                "message": message
+                "message": _("This webhook was ignored")
             })
         }
         return response
@@ -107,7 +115,7 @@ def backlog_scheduled_handler(joblist):
 
 
 @webhook_handler_wrapper
-def backlog_webhook_handler(event, context):
+def backlog_webhook_handler(payload):
     import handlers.backlog
     response = handlers.backlog.webhook_handler(payload)
     return response

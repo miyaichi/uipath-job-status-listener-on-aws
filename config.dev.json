@@ -1,5 +1,6 @@
 {
-    "language": "en",
+    "language": "ja",
+    "timezone": "Asia/Tokyo",
 
     "webhook": {
         "orchestrator": {
@@ -7,6 +8,7 @@
         },
 
         "backlog": {
+            "available_state": "Faulted,Stopped",
             "api_key": "",
             "space_key": "",
             "project_id": "",
@@ -14,18 +16,22 @@
             "priority_id": ""
         },
         "chatwork": {
+            "available_state": "Successful,Faulted,Stopped",
             "api_token": "",
             "room_id": ""
         },
         "google_hangouts": {
+            "available_state": "Successful,Faulted,Stopped",
             "incomming_webhook_url": ""
         },
         "google_spreadsheet": {
+            "available_state": "Successful,Faulted,Stopped",
             "credential_file": "",
             "spreadsheet_id": "",
             "sheet": ""
         },
         "jira": {
+            "available_state": "Faulted,Stopped",
             "url": "",
             "username": "",
             "password": "",
@@ -33,12 +39,14 @@
             "issue_type": ""
         },
         "redmine": {
+            "available_state": "Faulted,Stopped",
             "url": "",
             "api_key": "",
             "project_id": "",
             "status_id": ""
         },
         "servicenow": {
+            "available_state": "Faulted,Stopped",
             "url": "",
             "username": "",
             "password": "",
@@ -47,9 +55,11 @@
             "impact": ""
         },
         "slack": {
+            "available_state": "Successful,Faulted,Stopped",
             "incomming_webhook_url": ""
         },
         "wrike": {
+            "available_state": "Faulted,Stopped",
             "tokey_key": "",
             "folder_id": ""
         }
@@ -66,6 +76,7 @@
         },
 
         "backlog": {
+            "available_state": "Faulted,Stopped",
             "api_key": "",
             "space_key": "",
             "project_id": "",
@@ -75,22 +86,28 @@
             "schedule": ""
         },
         "chatwork": {
+            "available_state": "Successful,Faulted,Stopped",
             "api_token": "",
             "room_id": "",
             "interval": 0,
             "schedule": ""
         },
         "google_hangouts": {
+            "available_state": "Successful,Faulted,Stopped",
             "incomming_webhook_url": "",
             "interval": 0,
             "schedule": ""
         },
         "google_spreadsheet": {
+            "available_state": "Successful,Faulted,Stopped",
             "credential_file": "",
             "spreadsheet_id": "",
-            "sheet": ""
+            "sheet": "",
+            "interval": 0,
+            "schedule": ""
         },
         "jira": {
+            "available_state": "Faulted,Stopped",
             "url": "",
             "username": "",
             "password": "",
@@ -100,6 +117,7 @@
             "schedule": ""
         },
         "redmine": {
+            "available_state": "Faulted,Stopped",
             "url": "",
             "api_key": "",
             "project_id": "",
@@ -108,6 +126,7 @@
             "schedule": ""
         },
         "servicenow": {
+            "available_state": "Faulted,Stopped",
             "url": "",
             "username": "",
             "password": "",
@@ -118,11 +137,13 @@
             "schedule": ""
         },
         "slack": {
+            "available_state": "Successful,Faulted,Stopped",
             "incomming_webhook_url": "",
             "interval": 0,
             "schedule": ""
         },
         "wrike": {
+            "available_state": "Faulted,Stopped",
             "tokey_key": "",
             "folder_id": "",
             "interval": 0,
